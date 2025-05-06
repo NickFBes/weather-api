@@ -1,4 +1,3 @@
-
 const apiKey = "f2f34793e75b4bf280101438240711";
 
 const localBtn = document.getElementById("btn-local");
@@ -25,6 +24,14 @@ function toggleSection(type) {
   }
 }
 
+function formatDate(dateStr) {
+  const date = new Date(dateStr);
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const weekday = date.toLocaleDateString("en-US", { weekday: "long" });
+  return `${day}/${month} (${weekday})`;
+}
+
 function renderWeather(containerId, data) {
   const container = document.getElementById(containerId);
   const current = data.current;
@@ -45,7 +52,7 @@ function renderWeather(containerId, data) {
         .map(
           (day) => `
         <div class="forecast-day">
-          <h4>${day.date}</h4>
+          <h4>${formatDate(day.date)}</h4>
           <img src="https:${day.day.condition.icon}" alt="icon" />
           <p>${day.day.avgtemp_c} ºC</p>
           <p>${day.day.condition.text}</p>
@@ -87,4 +94,3 @@ window.addEventListener("load", () => {
       "<p>Geolocation not supported.</p>";
   }
 });
-
