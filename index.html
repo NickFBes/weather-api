@@ -1,55 +1,62 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Previsão do tempo</title>
-
+    <title>Weather Forecast</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@500;700&display=swap"
       rel="stylesheet"
     />
-
     <link rel="stylesheet" href="./src/css/reset.css" />
-
     <link rel="stylesheet" href="./src/css/estilos.css" />
   </head>
   <body>
+    <header>
+      <h1>Weather API</h1>
+      <div class="toggle-buttons">
+        <button id="btn-local" class="active">Local Weather</button>
+        <button id="btn-search">Search Weather</button>
+      </div>
+    </header>
+
     <main class="container">
-      <div class="busca">
-        <input type="text" id="input-busca" placeholder="Digite uma cidade" />
-
-        <button class="btn-busca">
-          <img class="lupa" src="./src/imagens/lupa.png" alt="lupa da busca" />
-        </button>
-      </div>
-      <div class="informacao-principal">
-        <h1 id="cidade">Use a lupa acima para ver o clima em uma cidade</h1>
-
-        <p class="temperatura" id="temperatura"></p>
-
-        <img
-          id="icone-condicao"
-          src="https://cdn.weatherapi.com/weather/64x64/day/116.png"
-          alt="icone condição do clima"
-        />
-
-        <p class="condicao" id="condicao"></p>
-      </div>
-      <div class="informacao-secundaria">
-        <div class="humidade">
-          <span>Humidade</span>
-          <span id="humidade">--</span>
+      <section id="section-local" class="section active">
+        <div class="card">
+          <h2>Your Local Weather</h2>
+          <div id="local-weather"></div>
         </div>
+      </section>
 
-        <div class="velocidade-do-vento">
-          <span>Velocidade do Vento</span>
-          <span id="velocidade-do-vento">--</span>
+      <section id="section-search" class="section">
+        <div class="card">
+          <h2>Search Other City</h2>
+          <div class="search-bar">
+            <input type="text" id="input-search" placeholder="Enter a city" />
+            <button class="btn-search">
+              <img class="icon-search" src="./src/imagens/lupa.png" alt="search icon" />
+            </button>
+          </div>
+          <div id="searched-weather"></div>
         </div>
-      </div>
+      </section>
     </main>
+
+    <footer>
+      <p>Weather API Site by Nicolas Bes 2025</p>
+      <div class="footer-links">
+        <a href="https://github.com/seuusuario" target="_blank" title="GitHub">
+          <img src="./src/imagens/github-icon.png" alt="GitHub" width="24" />
+          <p>Github</p>
+        </a>
+        <a href="https://seuportfolio.com" target="_blank" title="Portfolio">
+          <img src="./src/imagens/portfolio-icon.png" alt="Portfolio" width="24" />
+          <p>Portfolio</p>
+        </a>
+      </div>
+    </footer>
 
     <script src="./src/js/index.js"></script>
   </body>

@@ -1,48 +1,90 @@
-// coloque aqui a sua chave de api
-const chaveDaApi = "f2f34793e75b4bf280101438240711";
 
-const botaoDeBusca = document.querySelector(".btn-busca");
+const apiKey = "f2f34793e75b4bf280101438240711";
 
-botaoDeBusca.addEventListener("click", async () => {
-  const cidade = document.getElementById("input-busca").value;
+const localBtn = document.getElementById("btn-local");
+const searchBtn = document.getElementById("btn-search");
+const sectionLocal = document.getElementById("section-local");
+const sectionSearch = document.getElementById("section-search");
+const inputSearch = document.getElementById("input-search");
+const searchButton = document.querySelector(".btn-search");
 
-  if (!cidade) return;
+localBtn.addEventListener("click", () => toggleSection("local"));
+searchBtn.addEventListener("click", () => toggleSection("search"));
 
-  const dados = await buscarDadosDaCidade(cidade);
+function toggleSection(type) {
+  if (type === "local") {
+    sectionLocal.classList.add("active");
+    sectionSearch.classList.remove("active");
+    localBtn.classList.add("active");
+    searchBtn.classList.remove("active");
+  } else {
+    sectionLocal.classList.remove("active");
+    sectionSearch.classList.add("active");
+    localBtn.classList.remove("active");
+    searchBtn.classList.add("active");
+  }
+}
 
-  if (dados) preencherDadosNaTela(dados, cidade);
+function renderWeather(containerId, data) {
+  const container = document.getElementById(containerId);
+  const current = data.current;
+  const forecast = data.forecast.forecastday;
+  container.innerHTML = `
+    <div class="weather-day">
+      <h3>${data.location.name}</h3>
+      <img src="https:${current.condition.icon}" alt="icon" />
+      <p>${current.temp_c} ºC - ${current.condition.text}</p>
+      <p>Feels like: ${current.feelslike_c} ºC</p>
+      <p>Humidity: ${current.humidity}%</p>
+      <p>Wind: ${current.wind_kph} km/h ${current.wind_dir}</p>
+      <p>Pressure: ${current.pressure_mb} mb</p>
+      <p>UV Index: ${current.uv}</p>
+    </div>
+    <div class="forecast">
+      ${forecast
+        .map(
+          (day) => `
+        <div class="forecast-day">
+          <h4>${day.date}</h4>
+          <img src="https:${day.day.condition.icon}" alt="icon" />
+          <p>${day.day.avgtemp_c} ºC</p>
+          <p>${day.day.condition.text}</p>
+        </div>
+      `
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+async function fetchWeather(query, containerId) {
+  try {
+    const url = `https://api.weatherapi.com/v1/forecast.json?key=${apiKey}&q=${query}&days=5&lang=en`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error("Error fetching data");
+    const data = await response.json();
+    renderWeather(containerId, data);
+  } catch (error) {
+    console.error("Weather fetch error:", error);
+    document.getElementById(containerId).innerHTML =
+      "<p>Error loading weather data.</p>";
+  }
+}
+
+searchButton.addEventListener("click", () => {
+  const city = inputSearch.value.trim();
+  if (city) fetchWeather(city, "searched-weather");
 });
 
-async function buscarDadosDaCidade(cidade) {
-  const apiUrl = `https://api.weatherapi.com/v1/current.json?key=${chaveDaApi}&q=${cidade}&aqi=no&lang=pt`;
+window.addEventListener("load", () => {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((position) => {
+      const { latitude, longitude } = position.coords;
+      fetchWeather(`${latitude},${longitude}`, "local-weather");
+    });
+  } else {
+    document.getElementById("local-weather").innerHTML =
+      "<p>Geolocation not supported.</p>";
+  }
+});
 
-  const resposta = await fetch(apiUrl);
-
-  if (resposta.status !== 200) return;
-
-  const dados = resposta.json();
-
-  return dados;
-}
-
-function preencherDadosNaTela(dados, cidade) {
-  const temperatura = dados.current.temp_c;
-  const condicao = dados.current.condition.text;
-  const humidade = dados.current.humidity;
-  const velocidadeDoVento = dados.current.wind_kph;
-  const iconeCondicao = dados.current.condition.icon;
-
-  document.getElementById("cidade").textContent = cidade;
-
-  document.getElementById("temperatura").textContent = `${temperatura} ºC`;
-
-  document.getElementById("condicao").textContent = condicao;
-
-  document.getElementById("humidade").textContent = `${humidade}%`;
-
-  document.getElementById(
-    "velocidade-do-vento"
-  ).textContent = `${velocidadeDoVento} km/h`;
-
-  document.getElementById("icone-condicao").setAttribute("src", iconeCondicao);
-}
